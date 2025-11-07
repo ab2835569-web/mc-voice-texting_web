@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Voice Texting</title>
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-Upwzt7fFgWIeeazpWpGDW.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+<style>
+  :root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #6b8cbc;
+    --accent-color: #ff6b6b;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+    color: var(--dark-color);
+  }
+  
+  .container {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 90%;
+    max-width: 700px;
+    text-align: center;
+  }
+  
+  h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+  }
+  
+  .subtitle {
+    color: var(--secondary-color);
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+  }
+  
+  .language-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+  
+  .lang-btn {
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid var(--secondary-color);
+    background-color: white;
+    color: var(--secondary-color);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .lang-btn.active {
+    background-color: var(--secondary-color);
+    color: white;
+  }
+  
+  #textOutput {
+    width: 100%;
+    height: 200px;
+    margin: 20px 0;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 2px solid #e1e5eb;
+    resize: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  
+  #textOutput:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+  }
+  
+  .controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+  }
+  
+  #startBtn { 
+    background-color: var(--primary-color); 
+    color: white; 
+  }
+  
+  #startBtn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+  }
+  
+  #stopBtn { 
+    background-color: var(--accent-color); 
+    color: white; 
+  }
+  
+  #stopBtn:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+  }
+  
+  #copyBtn { 
+    background-color: #6c757d; 
+    color: white; 
+  }
+  
+  #copyBtn:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+  }
+  
+  .recording-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 10px;
+    color: var(--accent-color);
+    font-weight: bold;
+  }
+  
+  .pulse {
+    width: 15px;
+    height: 15px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+    }
+    
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+    }
+    
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+  }
+  
+  .status {
+    margin-top: 15px;
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px;
+    }
+    
+    h1 {
+      font-size: 1.8rem;
+    }
+    
+    .controls {
+      flex-direction: column;
+    }
+    
+    .btn {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>MC Voice Texting</h1>
+  <p class="subtitle">আপনার ভয়েসকে টেক্সটে রূপান্তর করুন</p>
+  
+  <div class="language-selector">
+    <button class="lang-btn active" id="englishBtn">English</button>
+    <button class="lang-btn" id="bengaliBtn">বাংলা</button>
+  </div>
+  
+  <textarea id="textOutput" placeholder="আপনার টেক্সট এখানে প্রদর্শিত হবে..." readonly></textarea>
+  
+  <div class="recording-indicator" id="recordingIndicator">
+    <div class="pulse"></div>
+    <span>ভয়েস রেকর্ডিং চলছে...</span>
+  </div>
+  
+  <div class="controls">
+    <button id="startBtn" class="btn">🎤 Start Recording</button>
+    <button id="stopBtn" class="btn">⏹ Stop</button>
+    <button id="copyBtn" class="btn">📋 Copy Text</button>
+  </div>
+  
+  <div class="status" id="status">প্রস্তুত</div>
+</div>
+
+<script>
+  // Check browser support
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!window.SpeechRecognition) {
+    alert("Your browser does not support Web Speech API. Please use Chrome or Edge.");
+  }
+
+  const recognition = new window.SpeechRecognition();
+  recognition.interimResults = false; // Only final results for accuracy
+  recognition.continuous = true;
+  recognition.maxAlternatives = 1; // Limit alternatives for better focus
+  recognition.lang = 'en-US'; // Default English
+  let finalTranscript = '';
+  let isRecording = false;
+  const CONFIDENCE_THRESHOLD = 0.7; // Minimum confidence for accepting results (adjustable)
+
+  const textOutput = document.getElementById('textOutput');
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const englishBtn = document.getElementById('englishBtn');
+  const bengaliBtn = document.getElementById('bengaliBtn');
+  const recordingIndicator = document.getElementById('recordingIndicator');
+  const status = document.getElementById('status');
+
+  // Language selection
+  englishBtn.addEventListener('click', () => {
+    recognition.lang = 'en-US';
+    englishBtn.classList.add('active');
+    bengaliBtn.classList.remove('active');
+    startBtn.textContent = '🎤 Start Recording';
+    status.textContent = 'Language set to English';
+    textOutput.placeholder = 'Your text will appear here...';
+  });
+
+  bengaliBtn.addEventListener('click', () => {
+    recognition.lang = 'bn-IN'; // Changed to bn-IN for potentially better accuracy in Bengali recognition
+    bengaliBtn.classList.add('active');
+    englishBtn.classList.remove('active');
+    startBtn.textContent = '🎤 রেকর্ডিং শুরু করুন';
+    status.textContent = 'ভাষা বাংলা সেট করা হয়েছে';
+    textOutput.placeholder = 'আপনার টেক্সট এখানে প্রদর্শিত হবে...';
+  });
+
+  // Start recognition
+  startBtn.addEventListener('click', () => {
+    if (!isRecording) {
+      finalTranscript = '';
+      textOutput.value = '';
+      recognition.start();
+      isRecording = true;
+      recordingIndicator.style.display = 'flex';
+      status.textContent = recognition.lang === 'bn-IN' ? 
+        'রেকর্ডিং শুরু হয়েছে, কথা বলুন... (স্পষ্টভাবে বলুন উন্নত ফলাফলের জন্য)' : 'Recording started, speak now... (Speak clearly for better results)';
+      startBtn.disabled = true;
+    }
+  });
+
+  // Stop recognition
+  stopBtn.addEventListener('click', () => {
+    if (isRecording) {
+      recognition.stop();
+      isRecording = false;
+      recordingIndicator.style.display = 'none';
+      status.textContent = recognition.lang === 'bn-IN' ? 
+        'রেকর্ডিং বন্ধ করা হয়েছে' : 'Recording stopped';
+      startBtn.disabled = false;
+    }
+  });
+
+  // Copy text
+  copyBtn.addEventListener('click', () => {
+    if (textOutput.value.trim() !== '') {
+      navigator.clipboard.writeText(textOutput.value).then(() => {
+        alert(recognition.lang === 'bn-IN' ? 
+          "টেক্সট ক্লিপবোর্ডে কপি করা হয়েছে!" : "Text copied to clipboard!");
+      });
+    } else {
+      alert(recognition.lang === 'bn-IN' ? 
+        "কপি করার জন্য কোন টেক্সট নেই!" : "No text to copy!");
+    }
+  });
+
+  recognition.addEventListener('result', (event) => {
+    let newTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        const result = event.results[i][0];
+        // Only add if confidence is above threshold for improved accuracy
+        if (result.confidence >= CONFIDENCE_THRESHOLD) {
+          newTranscript += result.transcript + ' ';
+          status.textContent = recognition.lang === 'bn-IN' ? 
+            `টেক্সট যুক্ত (আস্থা: ${(result.confidence * 100).toFixed(0)}%)` : 
+            `Text added (Confidence: ${(result.confidence * 100).toFixed(0)}%)`;
+        } else {
+          status.textContent = recognition.lang === 'bn-IN' ? 
+            'কম আস্থা - পুনরায় বলুন' : 'Low confidence - Please repeat';
+        }
+      }
+    }
+    
+    if (newTranscript.trim() !== '') {
+      finalTranscript += newTranscript;
+      textOutput.value = finalTranscript;
+      
+      // Auto scroll to bottom
+      textOutput.scrollTop = textOutput.scrollHeight;
+    }
+  });
+
+  recognition.addEventListener('end', () => {
+    if (isRecording) {
+      // If still supposed to be recording, restart
+      recognition.start();
+    }
+  });
+
+  recognition.addEventListener('error', (event) => {
+    console.error('Speech recognition error', event.error);
+    status.textContent = recognition.lang === 'bn-IN' ? 
+      'ত্রুটি: ' + event.error + ' (স্পষ্ট করে বলুন এবং ব্যাকগ্রাউন্ড নয়েজ কমান)' : 
+      'Error: ' + event.error + ' (Speak clearly and reduce background noise)';
+    isRecording = false;
+    recordingIndicator.style.display = 'none';
+    startBtn.disabled = false;
+  });
+
+  // Additional tip: Add a one-time alert for best practices
+  let tipShown = false;
+  startBtn.addEventListener('click', () => {
+    if (!tipShown) {
+      tipShown = true;
+      alert(recognition.lang === 'bn-IN' ? 
+        'সর্বোত্তম ফলাফলের জন্য: স্পষ্ট এবং ধীরে কথা বলুন, ভালো মাইক্রোফোন ব্যবহার করুন, এবং ব্যাকগ্রাউন্ড শব্দ কমান।' : 
+        'For best results: Speak clearly and slowly, use a good microphone, and minimize background noise.');
+    }
+  }, { once: true });
+</script>
+
+</body>
+</html>
